@@ -1,0 +1,23 @@
+input {
+  file {
+    path => "/usr/share/logstash/data/sample.csv"
+    start_position => "beginning"
+    sincedb_path => "/dev/null"
+  }
+}
+
+filter {
+  csv {
+    separator => ","
+    columns => ["User_Id","First_Name"]
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => "${ELASTICSEARCH_HOST}"
+    user => "${ELASTICSEARCH_USERNAME}"
+    password => "${ELASTICSEARCH_PASSWORD}"
+    index => "sample_csv-%{+YYYY.MM.dd}"
+  }
+}

@@ -6,21 +6,39 @@ services:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xms512m"
-      - xpack.security.enabled=true
       # For testing only these are false, represent security off
-      # - xpack.security.enabled=false
-      - xpack.security.enrollment.enabled=false
-      # - xpack.security.transport.ssl.enabled=true
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=false
+      # - xpack.security.enrollment.enabled=false
+      # - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - ./elasticsearch/data/db:/usr/share/elasticsearch/data
       - ./elasticsearch/data/logs:/usr/share/elasticsearch/logs
       - ./elasticsearch/data/repo:/usr/share/elasticsearch/repo
     ports:
-      - "9201:9200"
-    expose:
-      - "9201"
+      - "9200:9200"
   my_kibana:
     build: ./kibana
+    volumes:
+      - ./kibana/data/:/usr/share/kibana/data
     environment:
       ELASTICSEARCH_HOSTS: '["http://my_elastic:9200"]'
+      # ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+      # ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
+      # KIBANA_PASSWORD: ${KIBANA_PASSWORD}
+    ports:
+      - "5601:5601"
+      - "5621:5621"
+    depends_on: ["my_elastic"]
+  my_logstash:
+    build: ./logstash
+    volumes:
+      - ./logFile.log:/var/log/logstash/logFile.log
+      - ./logstash/data:/usr/share/logstash/data
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+      - xpack.security.enabled=false
+      - "ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}"
+    ports:
+      - "9600:9600"
+    depends_on:
+      - my_elastic
