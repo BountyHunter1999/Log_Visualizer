@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  my_elastic:
+    build: ./elasticsearch
+    container_name: "log_elastic"
+    environment:
+      - discover.type=single-node
+      - "ES_JAVA_OPTS=Xms512m -Xms512m"
+      # For testing only these are false, represent security off
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    volumes:
+      - ./elasticsearch/data/db:/usr/share/elasticsearch/data
+      - ./elasticsearch/data/logs:/usr/share/elasticsearch/logs
+      - ./elasticsearch/data/repo:/usr/share/elasticsearch/repo
+    ports:
+      - "9201:9200"
+    expose:
+      - "9201"
+  
