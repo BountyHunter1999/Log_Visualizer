@@ -4,11 +4,14 @@ services:
     build: ./elasticsearch
     container_name: "log_elastic"
     environment:
-      - discover.type=single-node
-      - "ES_JAVA_OPTS=Xms512m -Xms512m"
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xms512m"
+      - xpack.security.enabled=true
       # For testing only these are false, represent security off
-      - xpack.security.enabled=false
+      # - xpack.security.enabled=false
       - xpack.security.enrollment.enabled=false
+      # - xpack.security.transport.ssl.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - ./elasticsearch/data/db:/usr/share/elasticsearch/data
       - ./elasticsearch/data/logs:/usr/share/elasticsearch/logs
@@ -17,4 +20,7 @@ services:
       - "9201:9200"
     expose:
       - "9201"
-  
+  my_kibana:
+    build: ./kibana
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://my_elastic:9200"]'
