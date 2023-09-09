@@ -37,11 +37,12 @@ services:
     build: ./logstash
     volumes:
       - ./logFile.log:/var/log/logstash/logFile.log
-      - ./logstash/data:/usr/share/logstash/data
+      # - ./logstash/data:/usr/share/logstash/data
+      - ./logstash/logstash_simple.conf:/etc/logstash/logstash_simple.conf
     environment:
       - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
       - xpack.security.enabled=false
-      - "ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}"
+      - "MONITORING_ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}"
     ports:
       - "9600:9600"
     depends_on:
