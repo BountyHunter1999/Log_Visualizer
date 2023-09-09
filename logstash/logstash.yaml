@@ -195,8 +195,7 @@ path.logs: /var/log/logstash
 # path.plugins: []
 
 #xpack.monitoring.elasticsearch.password: MyLogstashPa$$w0rd!
-# xpack.monitoring.elasticsearch.hosts: ["http://my_elastic:9200"]
-xpack.monitoring.elasticsearch.hosts: my_elastic
+xpack.monitoring.elasticsearch.hosts: ["http://my_elastic:9200"]
 # xpack.monitoring.elasticsearch.hosts: "${ELASTICSEARCH_HOST}"
 xpack.monitoring.enabled: true
 # http.host: "0.0.0.0"

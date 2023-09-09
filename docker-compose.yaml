@@ -16,19 +16,23 @@ services:
       - ./elasticsearch/data/repo:/usr/share/elasticsearch/repo
     ports:
       - "9200:9200"
+    networks:
+      - log_network
   my_kibana:
     build: ./kibana
     volumes:
       - ./kibana/data/:/usr/share/kibana/data
     environment:
       ELASTICSEARCH_HOSTS: '["http://my_elastic:9200"]'
-      # ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
-      # ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
-      # KIBANA_PASSWORD: ${KIBANA_PASSWORD}
+    # ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+    # ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
+    # KIBANA_PASSWORD: ${KIBANA_PASSWORD}
     ports:
       - "5601:5601"
-      - "5621:5621"
-    depends_on: ["my_elastic"]
+    depends_on:
+      - my_elastic
+    networks:
+      - log_network
   my_logstash:
     build: ./logstash
     volumes:
@@ -42,3 +46,9 @@ services:
       - "9600:9600"
     depends_on:
       - my_elastic
+    restart: on-failure
+    networks:
+      - log_network
+
+networks:
+  log_network:
