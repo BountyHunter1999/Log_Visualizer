@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  my_elastic:
+  elasticsearch:
     build: ./elasticsearch
     container_name: "log_elastic"
     environment:
@@ -23,14 +23,14 @@ services:
     volumes:
       - ./kibana/data/:/usr/share/kibana/data
     environment:
-      ELASTICSEARCH_HOSTS: '["http://my_elastic:9200"]'
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
     # ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
     # ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
     # KIBANA_PASSWORD: ${KIBANA_PASSWORD}
     ports:
       - "5601:5601"
     depends_on:
-      - my_elastic
+      - elasticsearch
     networks:
       - log_network
   my_logstash:
@@ -39,14 +39,18 @@ services:
       - ./logFile.log:/var/log/logstash/logFile.log
       # - ./logstash/data:/usr/share/logstash/data
       - ./logstash/logstash_simple.conf:/etc/logstash/logstash_simple.conf
+      - ./logstash/logstash_simple.conf:/usr/share/logstash/logstash_simple.conf
+      # - ./logstash/logstash_simple.conf:/temp/logstash_simple.conf # temp fix
     environment:
       - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
       - xpack.security.enabled=false
       - "MONITORING_ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}"
+      - "ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}"
+    command: "bin/logstash -f /etc/logstash/logstash_simple.conf"
     ports:
       - "9600:9600"
     depends_on:
-      - my_elastic
+      - elasticsearch
     restart: on-failure
     networks:
       - log_network
